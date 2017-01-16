@@ -8,8 +8,9 @@ test('basic', function (t) {
 
   pt.timeout(Date.now() + 2500, {name: 'ed'});
 
-  function cb (data) {
+  function cb (data, ts) {
     t.equal(data.name, 'ed');
+    t.equal(Math.floor(ts / 1000), Math.floor(Date.now() / 1000));
     t.end();
   }
 });
