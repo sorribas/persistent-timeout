@@ -22,25 +22,40 @@ module.exports = function (db, listener, opts) {
 
     endOfStream(function () {
       lt.setTimeout(function () {
-        db.del(key);
-        listener(data, timestamp);
+        timeoutFn(key, data, timestamp);
       }, timestamp - Date.now());
       db.put(key, val, cb);
     });
+
+    return  key;
+  };
+
+  that.removeTimeout = function (key, cb) {
+    db.del(key, cb)
   };
 
   return that;
 
   function ondata (record) {
     lt.setTimeout(function () {
-      db.del(record.key);
-      listener(record.value.data, record.value.timestamp);
+      timeoutFn(record.key, record.value.data, record.value.timestamp);
     }, record.value.timestamp - Date.now());
   }
 
   function endOfStream (cb) {
     if (streamEnded) return cb();
     stream.on('end', cb);
+  }
+
+  function timeoutFn (key, data, timestamp) {
+    db.get(key, onget);
+
+    function onget (err, val) {
+      if (err && err.name === 'NotFoundError') return;
+      if (err) return that.emit('error', err);
+      db.del(key);
+      listener(data, timestamp);
+    }
   }
 };
 

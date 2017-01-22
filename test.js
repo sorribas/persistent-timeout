@@ -31,3 +31,21 @@ test('existing timeout', function (t) {
     t.end();
   }
 });
+
+test('remove timeout', function (t) {
+  var db = memdb({valueEncoding: 'json'});
+  var pt = persistentTimeout(db, cb);
+
+  var key = pt.timeout(Date.now() + 2500, {name: 'ed'});
+  setTimeout(function () {
+    pt.removeTimeout(key);
+  }, 500);
+
+  setTimeout(function () {
+    t.end();
+  }, 4000);
+
+  function cb (data, ts) {
+    t.fail('Should not be called');
+  }
+})
