@@ -37,9 +37,10 @@ module.exports = function (db, listener, opts) {
   return that;
 
   function ondata (record) {
-    lt.setTimeout(function () {
+    const tm = lt.setTimeout(function () {
       timeoutFn(record.key, record.value.data, record.value.timestamp);
     }, record.value.timestamp - Date.now());
+    console.log('persistent timeout ->',tm.after);
   }
 
   function endOfStream (cb) {
