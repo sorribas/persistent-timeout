@@ -38,7 +38,6 @@ module.exports = function (db, listener, opts) {
   return that;
 
   function ondata (record) {
-    console.log('ondata', record);
     const tm = lt.setTimeout(function () {
       timeoutFn(record.key, record.value.data, record.value.timestamp);
     }, record.value.timestamp - Date.now());
