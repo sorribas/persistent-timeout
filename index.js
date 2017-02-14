@@ -3,6 +3,7 @@ var crypto = require('crypto');
 var events = require('events');
 
 module.exports = function (db, listener, opts) {
+  console.log('PERSISTENT TIMEOUT');
   var stream = db.createReadStream()
   var streamEnded = false;
   var that = new events.EventEmitter();
@@ -37,6 +38,7 @@ module.exports = function (db, listener, opts) {
   return that;
 
   function ondata (record) {
+    console.log('ondata', record);
     const tm = lt.setTimeout(function () {
       timeoutFn(record.key, record.value.data, record.value.timestamp);
     }, record.value.timestamp - Date.now());
